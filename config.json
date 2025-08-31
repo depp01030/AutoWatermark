@@ -1,0 +1,41 @@
+{
+  "_about": "Config for watermark-batch — keys starting with '_' are comments and safely ignored.",
+  "input": "examples/input",
+  "_input": "來源根資料夾（會做 DFS 掃描）",
+
+  "output": "examples/output",
+  "_output": "輸出根資料夾（會保留原有子資料夾結構）",
+
+  "text": "hertudio",
+  "_text": "要重複鋪滿的一段文字；單列水平鋪滿、整體置中、避免截字",
+
+  "font": "/System/Library/Fonts/Supplemental/Arial.ttf",
+  "_font": "字型檔路徑（建議填自己的 .ttf/.otf；若留空會用 Pillow 內建等寬字，效果較差）",
+
+  "font_size": 500,
+  "_font_size": "字體大小（像素）",
+
+  "opacity": 0.25,
+  "_opacity": "文字不透明度 0~1；0.25 = 25% 不透明（偏透明）",
+
+  "gap": 24,
+  "_gap": "相鄰兩個『整段文字』之間的水平間距（像素）",
+
+  "margin": 32,
+  "_margin": "左右邊界留白（像素）；演算法會在 usable_w = W - 2*margin 內排版",
+
+  "stroke": false,
+  "_stroke": "是否加黑色描邊以提升對比（建議在照片亮部很多時開啟）",
+
+  "stroke_width": 0,
+  "_stroke_width": "描邊線寬（像素；僅在 stroke=true 時生效）",
+
+  "ext": "jpg,jpeg,png,webp",
+  "_ext": "要處理的副檔名（逗號分隔；大小寫不敏感）",
+
+  "overwrite": true,
+  "_overwrite": "若輸出檔已存在是否覆蓋（false = 跳過）",
+
+  "quality": 90,
+  "_quality": "輸出 JPEG 品質（1~95；僅對 .jpg/.jpeg 有效）"
+}
