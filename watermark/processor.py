@@ -76,43 +76,39 @@ def process_image(src_path: Path, dst_path: Path, args):
             print(f"[WARN] Text measurement invalid for '{text}'. Skip.")
             return
 
-        # 可用寬度（左右保留 margin）
-        usable_w = max(0, W - 2 * margin)
+        # 設定置中座標
+        cx = W // 2
+        y = (H - text_h) // 2  # 垂直置中
 
-        # 計算最多可放多少「完整字串」
-        # 放法：text 之間有固定 gap，總寬 = n*text_w + (n-1)*gap
-        # 要求：總寬 <= usable_w，且 n >= 1 才畫
-        n = 0
-        if usable_w >= text_w:
-            # 先至少能放 1 個
-            n = 1 + max(0, (usable_w - text_w) // (text_w + gap))  # 粗估下界
-            # 微調上/下界以確保不超過 usable_w
-            while n * text_w + (n - 1) * gap > usable_w:
-                n -= 1
-
-        if n <= 0:
-            # 空間太窄（字太大或 margin 太大）
-            print(f"[WARN] Not enough width for one full token '{text}' on {src_path.name}. Skip.")
-            return
-
-        total_w = n * text_w + (n - 1) * gap
-        start_x = (W - total_w) // 2               # 水平整體置中
-        y = (H - text_h) // 2                      # 垂直置中（單行）
-
-        # 準備顏色（白字 + 不透明度）
         alpha_255 = int(255 * max(0.0, min(1.0, opacity)))
         fill = (255, 255, 255, alpha_255)
         stroke_fill = (0, 0, 0, alpha_255) if use_stroke else None
 
-        # 寫入 n 份 text：不裁切、不超出 usable_w，左右對稱
+        # ==== 改造：滿版鋪字（允許切邊） ====
+        # 從中心開始往左右鋪滿
+        # 起始位置：讓第一個字串剛好在畫布中心置中
+        start_x = cx - text_w // 2
+
+        # 往左鋪
         x = start_x
-        for i in range(n):
+        while x + text_w > 0:
+            if use_stroke and stroke_width > 0:
+                draw.text((x, y), text, font=font, fill=fill,
+                          stroke_width=stroke_width, stroke_fill=stroke_fill)
+            else:
+                draw.text((x, y), text, font=font, fill=fill)
+            x -= text_w + gap
+
+        # 往右鋪
+        x = start_x + text_w + gap
+        while x < W:
             if use_stroke and stroke_width > 0:
                 draw.text((x, y), text, font=font, fill=fill,
                           stroke_width=stroke_width, stroke_fill=stroke_fill)
             else:
                 draw.text((x, y), text, font=font, fill=fill)
             x += text_w + gap
+
 
         # 合成輸出
         composed = Image.alpha_composite(im, layer)
@@ -127,4 +123,4 @@ def process_image(src_path: Path, dst_path: Path, args):
                 save_kwargs["exif"] = exif_bytes
 
         composed.save(dst_path, **save_kwargs)
-        print(f"[OK] {src_path} -> {dst_path} (n={n}, font_size={font_size}, gap={gap}, opacity={opacity})")
+        print(f"[OK] {src_path} -> {dst_path} (font_size={font_size}, gap={gap}, opacity={opacity})")
