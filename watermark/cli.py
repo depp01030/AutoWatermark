@@ -34,8 +34,8 @@ def main():
     )
     parser.set_defaults(**defaults)
 
-    parser.add_argument("--input", required="input" not in defaults, help="Input folder path")
-    parser.add_argument("--output", required="output" not in defaults, help="Output folder path")
+    # parser.add_argument("--input", required="input" not in defaults, help="Input folder path")
+    # parser.add_argument("--output", required="output" not in defaults, help="Output folder path")
     parser.add_argument("--text", help="Text watermark")
     parser.add_argument("--wm-image", help="Image watermark path (png recommended)")
     parser.add_argument("--overwrite", action="store_true", help="Overwrite output files if exist")
@@ -45,11 +45,23 @@ def main():
 
 
     args = parser.parse_args(remaining_argv)
-    input_root = Path(args.input).resolve()
-    output_root = Path(args.output).resolve()
+    # input_root = Path(args.input).resolve()
+    
+    print(f"請輸入目標資料夾")
+    raw = input().strip()
+    print('raw', raw)
+    if (raw.startswith('"') and raw.endswith('"')) or (raw.startswith("'") and raw.endswith("'")):
+        raw = raw[1:-1]  # 去掉前後的引號
+    
+    print('raw', raw)
+    input_root = Path(raw.strip()).resolve()
+    
+    #output_root = Path(args.output).resolve()
+    output_root = input_root.parent   # 上層目錄
 
     if not input_root.exists():
         raise SystemExit(f"[ERROR] Input folder not found: {input_root}")
+
 
     print(f"[INFO] Input 資料夾為 {input_root} ...")
     print(f"[INFO] Output 資料夾為 {output_root} ...")
