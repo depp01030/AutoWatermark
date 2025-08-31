@@ -14,6 +14,9 @@ def _measure_text(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.ImageFon
     l, t, r, b = draw.textbbox((0, 0), text, font=font)
     return (r - l, b - t)
 
+def _font_for_scale_simple(font_path, img_h, scale, min_px=10, max_px=512):
+    size = max(min_px, min(max_px, int(round(img_h * scale)* 1.5)))
+    return _load_font(font_path, size), size
 def process_image(src_path: Path, dst_path: Path, args):
     """
     將文字 args.text 重複鋪在圖片中央的單條水平帶上，整體置中、兩邊不裁切字樣。
@@ -25,10 +28,7 @@ def process_image(src_path: Path, dst_path: Path, args):
     if not text:
         raise SystemExit("[ERROR] No text provided. Use --text or config.json.")
 
-    font_size: int = getattr(args, "font_size", 48)
-    font_path: str | None = getattr(args, "font", None)
-    opacity: float = getattr(args, "opacity", 0.25)
-    gap: int = getattr(args, "gap", 24)
+
     margin: int = getattr(args, "margin", 16)
     use_stroke: bool = getattr(args, "stroke", False)
     stroke_width: int = getattr(args, "stroke_width", 2)
@@ -43,6 +43,27 @@ def process_image(src_path: Path, dst_path: Path, args):
         exif_bytes = im.info.get("exif")
         im = ImageOps.exif_transpose(im).convert("RGBA")
         W, H = im.size
+
+        ## handle font_size calculate ##
+        font_size_default: int = getattr(args, "font_size", 48)
+        font_path: str | None = getattr(args, "font", None)
+        # 取參數
+        font_scale: float | None = getattr(args, "font_scale", None)
+
+        # ... 開圖、算出 W, H 之後：
+        font_min   = getattr(args, "font_min_size", 10)
+        font_max   = getattr(args, "font_max_size", 512)
+
+        if font_scale is not None:
+            font, font_size = _font_for_scale_simple(font_path, H, font_scale, font_min, font_max)
+        else:
+            # 用固定大小（保留你原本邏輯）
+            font_size = font_size_default 
+
+        font = _load_font(font_path, font_size)
+        opacity: float = getattr(args, "opacity", 0.25)
+        gap = int(font_size * 0.5)
+
 
         # 建立同尺寸透明層，先在上面畫字，最後再合成
         layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))

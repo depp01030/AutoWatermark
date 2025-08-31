@@ -41,28 +41,21 @@ def main():
     parser.add_argument("--overwrite", action="store_true", help="Overwrite output files if exist")
     parser.add_argument("--ext", default="jpg,jpeg,png", help="Comma separated extensions (default: jpg,jpeg,png)")
 
-    # 文字調整
-    parser.add_argument("--font", help="Font file path for text watermark")
-    parser.add_argument("--font-size", type=int, default=48, help="Font size (default: 48)")
-    parser.add_argument("--opacity", type=float, default=0.25, help="Opacity 0~1 (default: 0.25)")
-    parser.add_argument("--gap", type=int, default=24, help="Gap between repeated texts (default: 24)")
-    parser.add_argument("--margin", type=int, default=16, help="Horizontal margins (default: 16)")
-    parser.add_argument("--stroke", action="store_true", help="Enable black stroke for text")
-    parser.add_argument("--stroke-width", type=int, default=2, help="Stroke width if --stroke (default: 2)")
-    parser.add_argument("--quality", type=int, default=90, help="JPEG quality 1-95 (default: 90)")
+
 
 
     args = parser.parse_args(remaining_argv)
-
     input_root = Path(args.input).resolve()
     output_root = Path(args.output).resolve()
-    allowed_exts = {e.strip().lower() for e in args.ext.split(",")}
 
     if not input_root.exists():
         raise SystemExit(f"[ERROR] Input folder not found: {input_root}")
 
-    print(f"[INFO] Scanning {input_root} ...")
+    print(f"[INFO] Input 資料夾為 {input_root} ...")
+    print(f"[INFO] Output 資料夾為 {output_root} ...")
+    
 
+    allowed_exts = {e.strip().lower() for e in args.ext.split(",")}
     for file_path in dfs_walk(input_root): 
         if file_path.suffix.lower().lstrip(".") not in allowed_exts:
             continue

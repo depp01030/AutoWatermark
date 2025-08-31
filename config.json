@@ -9,17 +9,17 @@
   "text": "hertudio",
   "_text": "要重複鋪滿的一段文字；單列水平鋪滿、整體置中、避免截字",
 
-  "font": "/System/Library/Fonts/Supplemental/Arial.ttf",
+  "font": "fonts/AbhayaLibre-Medium.ttf",
   "_font": "字型檔路徑（建議填自己的 .ttf/.otf；若留空會用 Pillow 內建等寬字，效果較差）",
 
-  "font_size": 500,
+  "font_scale": 0.02,
+  "_font_scale": "字體高度 ≈ 圖片高度 * 0.02（例如 2%）",
+  
+  "font_size": 34,
   "_font_size": "字體大小（像素）",
 
   "opacity": 0.25,
   "_opacity": "文字不透明度 0~1；0.25 = 25% 不透明（偏透明）",
-
-  "gap": 24,
-  "_gap": "相鄰兩個『整段文字』之間的水平間距（像素）",
 
   "margin": 32,
   "_margin": "左右邊界留白（像素）；演算法會在 usable_w = W - 2*margin 內排版",
